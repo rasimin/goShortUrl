@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "goshorturl/proto";
+
+import "google/api/annotations.proto";
+
+message URL {
+    int32 id = 1;
+    string original_url = 2;
+    string short_url = 3;
+    string created_at = 4;
+}
+
+message CreateURLRequest {
+    string original_url = 1;
+}
+
+message CreateURLResponse {
+    URL url = 1;
+}
+
+message GetURLRequest {
+    string short_url = 1;
+}
+
+message GetURLResponse {
+    URL url = 1;
+}
+
+message GetShortURLRequest {
+    string original_url = 1;
+}
+
+message GetShortURLResponse {
+    string short_url = 1;
+}
+
+service URLService {
+    rpc CreateURL(CreateURLRequest) returns (CreateURLResponse) {
+        option (google.api.http) = {
+            post: "/v1/url"
+            body: "*"
+        };
+    }
+    rpc GetURL(GetURLRequest) returns (GetURLResponse) {
+        option (google.api.http) = {
+            get: "/v1/url/{short_url}"
+        };
+    }
+    rpc GetShortURL(GetShortURLRequest) returns (GetShortURLResponse) {
+        option (google.api.http) = {
+            post: "/v1/shorturl"
+            body: "*"
+        };
+    }
+}
