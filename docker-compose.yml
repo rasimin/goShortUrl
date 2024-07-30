@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: golang_app
+    working_dir: /app
+    ports:
+      - "8080:8080" # Exposes HTTPPort from LoadConfig
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_DSN=postgresql://postgres:admin@db:5432/tugas_shorturl?sslmode=disable
+      - REDIS_ADDR=redis:6379
+      - GRPC_PORT=:50051
+      - HTTP_PORT=:8080
+
+  db:
+    image: postgres:14
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: tugas_shorturl
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+
+  redis:
+    image: redis:7
+    container_name: redis_server
+    ports:
+      - 6379:6379
+
+volumes:
+  postgres_data:
